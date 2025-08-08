@@ -1,0 +1,9 @@
+services:
+  nord-radar-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    tty: true
+    pull_policy: build
+    env_file: .env

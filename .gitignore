@@ -1,0 +1,16 @@
+
+*.png
+*.h5
+__pycache__/flask.cpython-312.pyc
+*.log
+legacy/hello.py
+legacy/generate_video.py
+legacy/forecast_map.py
+legacy/convert_hdf5_to_png_time.py
+legacy/convert_hdf5_to_png_map.py
+templates/index.html
+server.py
+.env
+.DS_Store
+elpris.py
+new_master.py
