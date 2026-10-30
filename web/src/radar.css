@@ -1,0 +1,72 @@
+/*
+ * TV2 Nord nedbørsradar – Tailwind-kilde. web/radar.css er GENERERET herfra:
+ *   cd web && npm install && npm run build
+ *
+ * Ingen preflight (komponenten må ikke resette værtssidens styles) og prefix `rd`,
+ * så klasser (rd:flex) og variabler (--rd-color-*) ikke kolliderer med tv2nord.dk's egne.
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme) prefix(rd);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+@source "../radar.js";
+@source "../index.html";
+
+/* tv2nord.dk: class="dark" på <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-midnight: #000523;
+  --color-salmon: #eb8c82;
+  --color-light: #fff5f0;
+  --color-peach: #ffe6d7;
+  --color-ink: #0c0c0c;
+  --color-night: #252525;
+}
+
+/* Det, der ikke kan skrives som utilities: range-sliderens pseudo-elementer. */
+@layer components {
+  .tv2nord-radar__slider {
+    --rd-observed: var(--rd-color-midnight);
+    --rd-forecast: var(--rd-color-salmon);
+    --rd-thumb: var(--rd-observed);
+    --rd-thumb-ring: #fff;
+    --rd-track: linear-gradient(to right,
+      var(--rd-observed) 0 var(--tv2nord-radar-split, 100%),
+      var(--rd-forecast) var(--tv2nord-radar-split, 100%) 100%);
+
+    @variant dark {
+      --rd-observed: var(--rd-color-light);
+      --rd-thumb-ring: var(--rd-color-night);
+    }
+  }
+  .is-forecast .tv2nord-radar__slider { --rd-thumb: var(--rd-forecast); }
+
+  .tv2nord-radar__slider::-webkit-slider-runnable-track {
+    height: 8px; border-radius: 4px; background: var(--rd-track);
+  }
+  .tv2nord-radar__slider::-moz-range-track {
+    height: 8px; border-radius: 4px; background: var(--rd-track);
+  }
+  .tv2nord-radar__slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    box-sizing: border-box;
+    width: 26px; height: 26px; margin-top: -9px;
+    border: 3px solid var(--rd-thumb-ring); border-radius: 50%;
+    background: var(--rd-thumb);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+  }
+  .tv2nord-radar__slider::-moz-range-thumb {
+    box-sizing: border-box;
+    width: 26px; height: 26px;
+    border: 3px solid var(--rd-thumb-ring); border-radius: 50%;
+    background: var(--rd-thumb);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+  }
+  .tv2nord-radar__slider:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--rd-thumb) 45%, transparent);
+  }
+  .tv2nord-radar__slider:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--rd-thumb) 45%, transparent);
+  }
+}

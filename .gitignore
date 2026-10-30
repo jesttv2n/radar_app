@@ -10,3 +10,4 @@ cache/
 deploy/wheels/
 *.h5
 !tests/fixtures/*.h5
+web/node_modules/

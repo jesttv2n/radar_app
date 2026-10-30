@@ -1,0 +1,12 @@
+{
+  "name": "tv2nord-radar-widget",
+  "private": true,
+  "description": "Bygger web/radar.css fra web/src/radar.css med Tailwind CLI",
+  "scripts": {
+    "build": "tailwindcss -i src/radar.css -o radar.css --minify && node scripts/scope-properties.mjs"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.3",
+    "tailwindcss": "4.3.3"
+  }
+}

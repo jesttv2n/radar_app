@@ -4,19 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nedbørsradar · TV2 Nord</title>
+<script>
+  // Som tv2nord.dk: class="dark" på <html> efter prefers-color-scheme, også ved live-skift
+  (function () {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    function apply() { document.documentElement.classList.toggle("dark", mq.matches); }
+    apply();
+    if (mq.addEventListener) mq.addEventListener("change", apply);
+  })();
+</script>
 <link rel="stylesheet" href="radar.css">
 <style>
-  body { margin: 0; padding: 24px 16px 48px; background: #f5f5f8; color: #1a1a2e;
-         font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 1100px; margin: 0 auto; }
-  h1 { margin: 0 0 4px; font-size: 1.5rem; }
-  p { margin: 0 0 16px; color: #6666aa; }
+  html { color-scheme: light; }
+  html.dark { color-scheme: dark; }
 </style>
 </head>
-<body>
-<main>
-  <h1>Nedbørsradar</h1>
-  <p>De seneste to timers regn og en prognose for den næste time.</p>
+<body class="rd:m-0 rd:bg-light rd:px-4 rd:pt-6 rd:pb-12 rd:font-sans rd:text-ink rd:dark:bg-night rd:dark:text-white">
+<main class="rd:mx-auto rd:max-w-[1100px]">
+  <h1 class="rd:mt-0 rd:mb-1 rd:text-2xl rd:font-bold">Nedbørsradar</h1>
+  <p class="rd:mt-0 rd:mb-4 rd:text-current/70">De seneste to timers regn og en prognose for den næste time.</p>
   <div data-tv2nord-radar data-src="https://services.tv2nord.dk/radar/data/" data-cooperative="false"></div>
 </main>
 <script>
