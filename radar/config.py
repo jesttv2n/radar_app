@@ -10,6 +10,8 @@ LEADS = 6  # 60 min prognose
 MOTION_FRAMES = 3
 
 ZR_A, ZR_B = 200.0, 1.6
+MIN_DBZ = 7.0  # regn under dette tælles som 0 mm/t
+RAIN_THR = 0.1  # mm/t; prognosetærskel
 
 # dBZ-grænser; under LEVELS[0] er pixlen gennemsigtig
 LEVELS = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 200]
