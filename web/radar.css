@@ -1,0 +1,157 @@
+/* TV2 Nord nedbørsradar – alt er scoped under .tv2nord-radar, så widgetten tåler indlejring. */
+.tv2nord-radar {
+  --tv2nord-radar-surface: #ffffff;
+  --tv2nord-radar-surface-alt: #f0f0f5;
+  --tv2nord-radar-border: #dddde8;
+  --tv2nord-radar-text: #1a1a2e;
+  --tv2nord-radar-muted: #6666aa;
+  --tv2nord-radar-accent: #6c63ff;
+  --tv2nord-radar-accent-hover: #7d75ff;
+  --tv2nord-radar-forecast: #f59e0b;
+  --tv2nord-radar-error: #e83c3c;
+  --tv2nord-radar-radius: 10px;
+  --tv2nord-radar-transition: 0.18s ease;
+
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  background: var(--tv2nord-radar-surface);
+  border: 1px solid var(--tv2nord-radar-border);
+  border-radius: var(--tv2nord-radar-radius);
+  color: var(--tv2nord-radar-text);
+  font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  text-align: left;
+}
+
+.tv2nord-radar[data-theme="dark"],
+[data-theme="dark"] .tv2nord-radar {
+  --tv2nord-radar-surface: #1a1a22;
+  --tv2nord-radar-surface-alt: #22222e;
+  --tv2nord-radar-border: #33334a;
+  --tv2nord-radar-text: #e8e8f0;
+  --tv2nord-radar-muted: #8888aa;
+}
+
+.tv2nord-radar *,
+.tv2nord-radar *::before,
+.tv2nord-radar *::after { box-sizing: border-box; }
+
+.tv2nord-radar__stage {
+  position: relative;
+  height: var(--tv2nord-radar-height, min(70vh, 520px));
+  min-height: 280px;
+}
+.tv2nord-radar .tv2nord-radar__map { position: absolute; inset: 0; } /* slår maplibregl-map's position: relative */
+
+.tv2nord-radar__badge {
+  position: absolute; top: 10px; left: 10px; z-index: 2;
+  display: none;
+  padding: 4px 10px;
+  background: var(--tv2nord-radar-forecast); color: #1a1a2e;
+  border-radius: 999px;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.tv2nord-radar.is-forecast .tv2nord-radar__badge { display: block; }
+
+.tv2nord-radar__status {
+  position: absolute; left: 50%; top: 48px; z-index: 2; /* under badge, fri af attribution */
+  transform: translateX(-50%);
+  display: none;
+  max-width: calc(100% - 120px);
+  padding: 8px 14px;
+  background: var(--tv2nord-radar-surface); color: var(--tv2nord-radar-text);
+  border: 1px solid var(--tv2nord-radar-border); border-radius: 8px;
+  font-size: 0.87rem; font-weight: 600; text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.tv2nord-radar__status.is-visible { display: block; }
+.tv2nord-radar__status.is-warning { border-color: var(--tv2nord-radar-forecast); }
+.tv2nord-radar__status.is-error { border-color: var(--tv2nord-radar-error); color: var(--tv2nord-radar-error); }
+
+.tv2nord-radar__controls {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  padding: 12px 14px 4px;
+  border-top: 1px solid var(--tv2nord-radar-border);
+}
+
+.tv2nord-radar__play {
+  flex: 0 0 44px; width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0; border: none; border-radius: 50%;
+  background: var(--tv2nord-radar-accent); color: #fff;
+  cursor: pointer; transition: background var(--tv2nord-radar-transition);
+}
+.tv2nord-radar__play:hover:not(:disabled) { background: var(--tv2nord-radar-accent-hover); }
+.tv2nord-radar__play:disabled { opacity: 0.55; cursor: not-allowed; }
+.tv2nord-radar__play:focus-visible { outline: 3px solid rgba(108, 99, 255, 0.45); outline-offset: 2px; }
+/* play-trekant / pause-streger tegnet i CSS */
+.tv2nord-radar__play::before {
+  content: ""; margin-left: 3px;
+  border-style: solid; border-width: 8px 0 8px 13px;
+  border-color: transparent transparent transparent currentColor;
+}
+.tv2nord-radar__play.is-playing::before {
+  margin-left: 0; width: 12px; height: 15px;
+  border-width: 0 4px; border-color: currentColor;
+}
+
+.tv2nord-radar__sr {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+.tv2nord-radar__slider {
+  --tv2nord-radar-track: linear-gradient(to right,
+    var(--tv2nord-radar-accent) 0 var(--tv2nord-radar-split, 100%),
+    var(--tv2nord-radar-forecast) var(--tv2nord-radar-split, 100%) 100%);
+  --tv2nord-radar-thumb: var(--tv2nord-radar-accent);
+  flex: 1 1 160px; min-width: 0;
+  height: 44px; margin: 0;
+  -webkit-appearance: none; appearance: none;
+  background: transparent; cursor: pointer;
+}
+.tv2nord-radar.is-forecast .tv2nord-radar__slider { --tv2nord-radar-thumb: var(--tv2nord-radar-forecast); }
+.tv2nord-radar__slider:disabled { opacity: 0.55; cursor: not-allowed; }
+.tv2nord-radar__slider:focus { outline: none; }
+.tv2nord-radar__slider::-webkit-slider-runnable-track {
+  height: 8px; border-radius: 4px; background: var(--tv2nord-radar-track);
+}
+.tv2nord-radar__slider::-moz-range-track {
+  height: 8px; border-radius: 4px; background: var(--tv2nord-radar-track);
+}
+.tv2nord-radar__slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 26px; height: 26px; margin-top: -9px;
+  border: 3px solid #fff; border-radius: 50%;
+  background: var(--tv2nord-radar-thumb);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+.tv2nord-radar__slider::-moz-range-thumb {
+  width: 20px; height: 20px;
+  border: 3px solid #fff; border-radius: 50%;
+  background: var(--tv2nord-radar-thumb);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+.tv2nord-radar__slider:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.4); }
+.tv2nord-radar__slider:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.4); }
+
+.tv2nord-radar__time {
+  flex: 1 0 100%;
+  font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.tv2nord-radar.is-forecast .tv2nord-radar__time::before {
+  content: "Prognose \00b7\00a0";
+  color: var(--tv2nord-radar-forecast);
+}
+
+.tv2nord-radar__footer {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 8px 16px;
+  padding: 4px 14px 12px;
+  color: var(--tv2nord-radar-muted); font-size: 0.75rem;
+}
+.tv2nord-radar__legend { flex: 0 1 220px; min-width: 160px; }
+.tv2nord-radar__legend-bar { height: 8px; border-radius: 4px; }
+.tv2nord-radar__legend-words { display: flex; justify-content: space-between; margin-top: 2px; }
