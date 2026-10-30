@@ -15,6 +15,7 @@
   position: relative;
   width: 100%;
   max-width: 100%;
+  container-type: inline-size; /* kortets højde følger komponentens egen bredde */
   overflow: hidden;
   background: var(--tv2nord-radar-surface);
   border: 1px solid var(--tv2nord-radar-border);
@@ -39,8 +40,8 @@
 
 .tv2nord-radar__stage {
   position: relative;
-  height: var(--tv2nord-radar-height, min(70vh, 520px));
-  min-height: 280px;
+  /* Bredt format på alle skærme: høj mobilvisning viste kun et udsnit af Nordjylland */
+  height: clamp(220px, 75cqw, var(--tv2nord-radar-max-height, 620px));
 }
 .tv2nord-radar .tv2nord-radar__map { position: absolute; inset: 0; } /* slår maplibregl-map's position: relative */
 

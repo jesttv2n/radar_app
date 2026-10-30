@@ -17,7 +17,6 @@ RAIN_THR = 0.1  # mm/t; prognosetærskel
 LEVELS = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 200]
 COLORS = ["#a6e3ff", "#5ab4f0", "#2a7fd4", "#1f4fa8", "#2fae3c", "#f2e030",
           "#f5a623", "#e8452c", "#b81f5b", "#7a1fa2"]
-NODATA_RGBA = (90, 90, 90, 70)  # uden for radardækning
 PRECIP_ALPHA = 215
 
 ATTRIBUTION = "Radardata: DMI (CC BY 4.0)"

@@ -34,20 +34,18 @@ class Warper:
 
 
 def _palette() -> list[int]:
-    """Index 0 transparent, 1..len(COLORS) precipitation colours, then the no-coverage grey."""
+    """Index 0 transparent, 1..len(COLORS) precipitation colours."""
     rgb = [(0, 0, 0)] + [tuple(int(c[i:i + 2], 16) for i in (1, 3, 5)) for c in config.COLORS]
-    rgb.append(config.NODATA_RGBA[:3])
     return [v for px in rgb for v in px]
 
 
 def save_png(dbz_3857: np.ndarray, path: Path) -> None:
-    """Palette PNG: 0 = dry, 1..10 = COLORS by LEVELS bin, 11 = NaN (outside coverage)."""
+    """Palette PNG: 0 = dry or outside coverage (transparent), 1..10 = COLORS by LEVELS bin."""
     n = len(config.COLORS)
-    idx = np.digitize(np.nan_to_num(dbz_3857, nan=-99), config.LEVELS[:-1])  # 0 below LEVELS[0]
-    idx = np.where(np.isnan(dbz_3857), n + 1, idx).astype(np.uint8)
+    idx = np.digitize(np.nan_to_num(dbz_3857, nan=-99), config.LEVELS[:-1]).astype(np.uint8)
     im = Image.fromarray(idx, "P")
     im.putpalette(_palette())
-    alpha = bytes([0] + [config.PRECIP_ALPHA] * n + [config.NODATA_RGBA[3]])
+    alpha = bytes([0] + [config.PRECIP_ALPHA] * n)
     path = Path(path)
     tmp = path.with_name(path.name + ".tmp")  # atomic: nginx may cache a partial file as immutable
     im.save(tmp, format="PNG", optimize=True, transparency=alpha)

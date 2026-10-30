@@ -45,7 +45,8 @@ def test_png_is_small_palette_with_transparency(tmp_path):
     render.save_png(arr, tmp_path / "x.png")
     im = Image.open(tmp_path / "x.png")
     assert im.mode == "P" and "transparency" in im.info
-    assert im.getpixel((0, 0)) == 0 and im.getpixel((1, 0)) == 11
+    # uden for radardækning er gennemsigtigt ligesom tørvejr — ingen grå ramme på kortet
+    assert im.getpixel((0, 0)) == 0 and im.getpixel((1, 0)) == 0
     assert im.getpixel((2, 0)) == 10
     assert (tmp_path / "x.png").stat().st_size < 400_000
     print("png bytes:", (tmp_path / "x.png").stat().st_size)

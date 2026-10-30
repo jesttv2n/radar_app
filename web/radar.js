@@ -7,6 +7,7 @@
   var STYLE = "https://tiles.openfreemap.org/styles/positron";
   var DEFAULT_SRC = "https://services.tv2nord.dk/radar/data/";
   var BBOX = [7.6, 54.4, 15.4, 57.9];
+  var NORDJYLLAND = [[8.15, 56.55], [11.25, 57.78]]; // startudsnit: hele regionen ved enhver bredde
   var ATTRIBUTION = "Radardata: DMI (CC BY 4.0)";
   var REFRESH_MS = 2 * 60 * 1000;
   var PLAY_MS = 700;
@@ -241,8 +242,8 @@
         map = new maplibregl.Map({
           container: mapEl,
           style: STYLE,
-          center: [9.9, 57.0],
-          zoom: 7.2,
+          bounds: NORDJYLLAND,
+          fitBoundsOptions: { padding: 8 },
           minZoom: 5.5,
           maxBounds: [[BBOX[0] - 1, BBOX[1] - 1], [BBOX[2] + 1, BBOX[3] + 1]],
           cooperativeGestures: root.getAttribute("data-cooperative") !== "false",
