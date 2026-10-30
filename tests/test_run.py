@@ -120,12 +120,3 @@ def test_json_safe_maps_non_finite_to_none():
     assert run._json_safe({"a": float("nan"), "b": float("inf"), "c": 1.5, "d": "x"}) == \
         {"a": None, "b": None, "c": 1.5, "d": "x"}
 
-
-def test_nowcast_failure_gives_obs_only(env, monkeypatch):
-    def boom(frames, leads):
-        raise ValueError("x contains non-finite values")
-
-    monkeypatch.setattr(run.nowcast, "sprog", boom)
-    env["times"] = [T(12, 30), T(12, 40), T(12, 50), T(13, 0)]
-    assert run.cycle(T(13, 2)) == "published"
-    assert manifest()["forecast"] is None

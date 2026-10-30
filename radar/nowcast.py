@@ -9,6 +9,7 @@ from . import config
 from .grid import Composite
 
 NO_ECHO = -32.0
+MIN_RAIN_FRACTION = 1e-3  # min share of raining pixels in every motion frame for S-PROG
 
 
 def zr(dbz: np.ndarray) -> np.ndarray:
@@ -41,6 +42,8 @@ def contiguous_tail(frames: list[Composite], step_min: int) -> list[Composite]:
 def sprog(frames: list[Composite], leads: int) -> np.ndarray:
     """Prognose [leads, y, x] i dBZ; -32 = ingen regn, NaN hvor seneste frame er NaN.
 
+    S-PROG når alle frames har nok regn, ellers ren fremskrivning; tørt seneste frame giver tør prognose.
+
     Bruger de sidste MOTION_FRAMES frames; kalderen sender en sammenhængende hale.
     """
     n = config.MOTION_FRAMES
@@ -49,14 +52,18 @@ def sprog(frames: list[Composite], leads: int) -> np.ndarray:
     last = frames[-n:]
     rate = np.nan_to_num(np.stack([zr(f.dbz) for f in last]), nan=0.0)
     shape = (leads, *rate.shape[1:])
-    if not (rate >= config.RAIN_THR).any():
+    raining = rate >= config.RAIN_THR
+    if not raining[-1].any():
         out = np.full(shape, NO_ECHO, dtype=np.float32)
     else:
         hist_db, meta = transformation.dB_transform(rate, threshold=config.RAIN_THR, zerovalue=-15.0)
-        velocity = motion.get_method("LK")(hist_db)
-        fc_db = nowcasts.get_method("sprog")(hist_db, velocity, leads, n_cascade_levels=6,
-                                             precip_thr=meta["threshold"])
-        fc = transformation.dB_transform(fc_db, threshold=-10.0, inverse=True)[0]
+        velocity = np.nan_to_num(motion.get_method("LK")(hist_db))
+        if raining.mean(axis=(1, 2)).min() >= MIN_RAIN_FRACTION:
+            fc_db = nowcasts.get_method("sprog")(hist_db, velocity, leads, n_cascade_levels=6,
+                                                 precip_thr=meta["threshold"])
+            fc = transformation.dB_transform(fc_db, threshold=-10.0, inverse=True)[0]
+        else:  # S-PROG needs rain in every frame; a (nearly) dry one gives NaN statistics
+            fc = nowcasts.get_method("extrapolation")(rate[-1], velocity, leads)
         out = to_dbz(np.nan_to_num(fc, nan=0.0)).astype(np.float32)
     out[:, np.isnan(last[-1].dbz)] = np.nan
     return out

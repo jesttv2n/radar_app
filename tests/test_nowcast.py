@@ -52,6 +52,34 @@ def test_nan_follows_latest_frame():
     assert np.all(np.isnan(out[:, :, :20])) and np.all(np.isfinite(out[:, :, 20:]))
 
 
+def _dry(t, size=300):
+    return make_frame(np.full((size, size), -32.0), t)
+
+
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_dry_dry_stray_pixel_does_not_raise():
+    stray = _dry(times(3)[2])
+    stray.dbz[150, 150] = 40.0
+    out = nowcast.sprog([_dry(times(3)[0]), _dry(times(3)[1]), stray], 3)
+    assert out.shape == (3, 300, 300) and np.isfinite(out).all()
+
+
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_dry_then_rain_still_forecasts_moving_rain():
+    t = times(3)
+    frames = [_dry(t[0]), blob_frame(104, t[1]), blob_frame(108, t[2])]
+    out = nowcast.sprog(frames, 3)
+    assert (out[2] >= 20).any()
+    assert abs(centroid_col(out[2] >= 20) - (108 + 12)) <= 4
+
+
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_rain_then_dry_latest_gives_dry_forecast():
+    t = times(3)
+    out = nowcast.sprog([blob_frame(100, t[0]), blob_frame(104, t[1]), _dry(t[2])], 3)
+    assert np.all(out == -32)
+
+
 def test_contiguous_tail_drops_before_gap():
     t = times(4)  # 12:30, 12:40, 12:50, 13:00
     frames = [make_frame(np.zeros((2, 2)), x) for x in (t[0], t[1], t[3])]

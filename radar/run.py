@@ -107,16 +107,11 @@ def cycle(now: datetime) -> str:
         render.save_png(warp(f.dbz), path)
         obs.append((f.time, path, _max_dbz(f.dbz)))
 
-    forecast = fc = None
+    forecast = None
     tail = nowcast.contiguous_tail(frames, config.STEP_MIN)
     if len(tail) >= config.MOTION_FRAMES:
-        try:
-            with contextlib.redirect_stdout(io.StringIO()):  # pysteps is chatty; journald gets our lines only
-                fc = nowcast.sprog(tail, config.LEADS)
-        except ValueError as e:  # e.g. pysteps on near-empty rain fields (single stray echo)
-            log.warning("nowcast failed, publishing obs only: %s", e)
-            fc = None
-    if fc is not None:
+        with contextlib.redirect_stdout(io.StringIO()):  # pysteps is chatty; journald gets our lines only
+            fc = nowcast.sprog(tail, config.LEADS)
         forecast = []
         for k in range(config.LEADS):
             t = latest.time + timedelta(minutes=config.STEP_MIN * (k + 1))
