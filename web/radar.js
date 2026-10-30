@@ -10,7 +10,7 @@
   var ATTRIBUTION = "Radardata: DMI (CC BY 4.0)";
   var REFRESH_MS = 2 * 60 * 1000;
   var PLAY_MS = 700;
-  var STALE_MIN = 30;
+  var STALE_MIN = 45; // 30 min data age + DMI delay; measured from the newest observation
   var RAIN_DBZ = 10;
   var LEGEND = ["#a6e3ff", "#5ab4f0", "#2a7fd4", "#1f4fa8", "#2fae3c", "#f2e030", "#f5a623", "#e8452c", "#b81f5b", "#7a1fa2"];
 
@@ -144,7 +144,8 @@
     function updateStatus() {
       if (fetchFailed || mapFailed) return setStatus("Radaren er ikke tilgængelig lige nu", "error");
       if (!manifest) return setStatus("", "info");
-      var age = Math.round((Date.now() - Date.parse(manifest.generated)) / 60000);
+      var newest = manifest.frames.filter(function (f) { return f.lead === 0; })[0] || manifest.frames[0];
+      var age = Math.round((Date.now() - Date.parse(newest.time)) / 60000);
       if (age > STALE_MIN) return setStatus("Data er " + age + " min gamle", "warning");
       var dry = manifest.frames.every(function (f) { return !(f.max_dbz >= RAIN_DBZ); });
       setStatus(dry ? "Ingen nedbør i området" : "", "info");

@@ -49,3 +49,32 @@ def test_png_is_small_palette_with_transparency(tmp_path):
     assert im.getpixel((2, 0)) == 10
     assert (tmp_path / "x.png").stat().st_size < 400_000
     print("png bytes:", (tmp_path / "x.png").stat().st_size)
+
+
+def test_coordinates_place_stations_within_500m():
+    """Pixel from the 4 manifest corners alone (linear in EPSG:3857, as MapLibre draws) vs warped marker."""
+    c = grid.crop(grid.read(F1300), config.BBOX)
+    warp = render.Warper(c.crs, c.transform, c.dbz.shape)
+    (tl, _, br, _) = warp.coordinates
+    assert tl == np.array(tl).tolist() and abs(tl[0] - 7.30962) < 1e-3 and abs(tl[1] - 57.99430) < 1e-3
+    assert abs(br[0] - 15.86643) < 1e-3 and abs(br[1] - 54.30402) < 1e-3
+    to_m = Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True).transform
+    to_src = Transformer.from_crs("EPSG:4326", c.crs, always_xy=True).transform
+    (xl, yt), (xr, yb) = to_m(*tl), to_m(*br)
+    px_m = (xr - xl) / warp.w
+    for name, (lon, lat) in STATIONS.items():
+        x, y = to_m(lon, lat)
+        px, py = (x - xl) / (xr - xl) * warp.w, (yt - y) / (yt - yb) * warp.h
+        col, row = ~c.transform @ to_src(lon, lat)
+        marker = np.zeros(c.dbz.shape, "float32")
+        marker[int(row) - 1:int(row) + 2, int(col) - 1:int(col) + 2] = 1
+        rr, cc = np.nonzero(np.nan_to_num(warp(marker)))
+        d_px = np.hypot(cc.mean() + 0.5 - px, rr.mean() + 0.5 - py)
+        assert d_px < 1, (name, d_px)
+        assert d_px * px_m * np.cos(np.radians(lat)) < 500, name
+
+
+def test_save_png_is_atomic_and_leaves_no_tmp(tmp_path):
+    arr = np.zeros((4, 4), "float32")
+    render.save_png(arr, tmp_path / "a.png")
+    assert [p.name for p in tmp_path.iterdir()] == ["a.png"]

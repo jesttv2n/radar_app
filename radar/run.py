@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 
 import numpy as np
 
-from . import config, dmi, grid, nowcast, publish, render, verify
+from . import config, dmi, grid, publish, render
 
 log = logging.getLogger("radar")
 
@@ -53,6 +53,7 @@ def _max_dbz(arr) -> float:
 
 def _verify(vdir, latest, t0_listed):
     """Score the stored lead-60 field made 60 min ago against the newest obs."""
+    from . import verify  # lazy: importing pysteps logs a config line
     for p in vdir.glob("fc_*_060.npy"):
         made = datetime.strptime(p.name[3:15], "%Y%m%d%H%M").replace(tzinfo=timezone.utc)
         if made == latest.time - timedelta(minutes=VERIFY_LEAD):
@@ -66,6 +67,31 @@ def _verify(vdir, latest, t0_listed):
             p.unlink()
 
 
+def _verify_safe(vdir, latest, t0_listed):
+    try:
+        _verify(vdir, latest, t0_listed)
+    except Exception:  # scoring is best effort; never fail the cycle after publishing
+        log.exception("verification failed")
+
+
+def _forecast(frames, latest, warp, public, out):
+    """Return [(time, path, max_dbz)] for the lead times, or None when history is too short."""
+    from . import nowcast  # lazy: importing pysteps logs a config line
+    tail = nowcast.contiguous_tail(frames, config.STEP_MIN)
+    if len(tail) < config.MOTION_FRAMES:
+        return None
+    with contextlib.redirect_stdout(io.StringIO()):  # pysteps is chatty; journald gets our lines only
+        fc = nowcast.sprog(tail, config.LEADS)
+    forecast = []
+    for k in range(config.LEADS):
+        t = latest.time + timedelta(minutes=config.STEP_MIN * (k + 1))
+        path = public / f"fc_{latest.time:%Y%m%d%H%M}_{config.STEP_MIN * (k + 1):03d}.png"
+        render.save_png(warp(fc[k]), path)
+        forecast.append((t, path, _max_dbz(fc[k])))
+    np.save(out / "verify" / f"fc_{latest.time:%Y%m%d%H%M}_{VERIFY_LEAD:03d}.npy", fc[-1])
+    return forecast
+
+
 def _write_state(path, t0):
     tmp = path.with_name(path.name + ".tmp")
     tmp.write_text(json.dumps({"last_t0": t0.isoformat()}), encoding="utf-8")
@@ -73,6 +99,16 @@ def _write_state(path, t0):
 
 
 def cycle(now: datetime) -> str:
+    try:
+        return _cycle(now)
+    finally:
+        try:
+            dmi.prune_cache(now)
+        except OSError as e:
+            log.warning("cache prune failed: %s", e)
+
+
+def _cycle(now: datetime) -> str:
     out, public = config.out_dir(), config.public_dir()
     state_path = out / "state.json"
     try:
@@ -96,33 +132,30 @@ def cycle(now: datetime) -> str:
     if not frames:
         log.error("no usable frames")
         return "failed"
+    latest = frames[-1]
+    if last and latest.time.isoformat() <= last:  # newest listed frame failed; nothing newer than what is live
+        log.info("no newer frame than %s", last)
+        return "unchanged"
     public.mkdir(parents=True, exist_ok=True)
     (out / "verify").mkdir(parents=True, exist_ok=True)
-    latest = frames[-1]
 
     warp = render.Warper(frames[0].crs, frames[0].transform, frames[0].dbz.shape)
     obs = []
     for f in frames:
         path = public / f"obs_{f.time:%Y%m%d%H%M}.png"
-        render.save_png(warp(f.dbz), path)
+        if not path.exists():  # obs names are immutable; served as immutable by nginx
+            render.save_png(warp(f.dbz), path)
         obs.append((f.time, path, _max_dbz(f.dbz)))
 
-    forecast = None
-    tail = nowcast.contiguous_tail(frames, config.STEP_MIN)
-    if len(tail) >= config.MOTION_FRAMES:
-        with contextlib.redirect_stdout(io.StringIO()):  # pysteps is chatty; journald gets our lines only
-            fc = nowcast.sprog(tail, config.LEADS)
-        forecast = []
-        for k in range(config.LEADS):
-            t = latest.time + timedelta(minutes=config.STEP_MIN * (k + 1))
-            path = public / f"fc_{latest.time:%Y%m%d%H%M}_{config.STEP_MIN * (k + 1):03d}.png"
-            render.save_png(warp(fc[k]), path)
-            forecast.append((t, path, _max_dbz(fc[k])))
-        np.save(out / "verify" / f"fc_{latest.time:%Y%m%d%H%M}_{VERIFY_LEAD:03d}.npy", fc[-1])
+    try:
+        forecast = _forecast(frames, latest, warp, public, out)
+    except Exception:
+        log.exception("forecast failed; publishing observations only")
+        forecast = None
 
     publish.publish(public, obs, forecast, warp.coordinates, now)
-    _write_state(state_path, t0)
-    _verify(out / "verify", latest, t0)
+    _write_state(state_path, latest.time)
+    _verify_safe(out / "verify", latest, t0)
     log.info("published t0=%s obs=%d forecast=%s", latest.time.isoformat(), len(obs),
              "yes" if forecast else "no")
     return "published"

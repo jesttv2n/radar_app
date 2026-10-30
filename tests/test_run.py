@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 import numpy as np
 import pytest
 
-from radar import config, dmi, run
+from radar import config, dmi, nowcast, run, verify
 
 
 def T(h, m):
@@ -120,3 +120,62 @@ def test_json_safe_maps_non_finite_to_none():
     assert run._json_safe({"a": float("nan"), "b": float("inf"), "c": 1.5, "d": "x"}) == \
         {"a": None, "b": None, "c": 1.5, "d": "x"}
 
+
+
+def test_old_cache_files_pruned(env):
+    env["times"] = [T(12, 30), T(12, 40), T(12, 50), T(13, 0)]
+    cache = config.cache_dir()
+    cache.mkdir(parents=True)
+    old = cache / "dk.com.202608280900.500_max.h5"
+    old_part = cache / "dk.com.202608280910.500_max.h5.part"
+    new = cache / "dk.com.202608281250.500_max.h5"
+    for p in (old, old_part, new):
+        p.write_bytes(b"x")
+    assert run.cycle(T(13, 2)) == "published"
+    assert not old.exists() and not old_part.exists() and new.exists()
+    old.write_bytes(b"x")
+    assert run.cycle(T(13, 4)) == "unchanged"  # pruned on every outcome
+    assert not old.exists()
+
+
+def test_newest_download_fails_keeps_manifest(env):
+    env["times"] = [T(12, 30), T(12, 40), T(12, 50), T(13, 0)]
+    assert run.cycle(T(13, 2)) == "published"
+    before = (config.public_dir() / "manifest.json").read_bytes()
+    env["times"] = [T(12, 30), T(12, 40), T(12, 50), T(13, 0), T(13, 10)]  # 13:10 has no fixture
+    assert run.cycle(T(13, 12)) == "unchanged"
+    assert (config.public_dir() / "manifest.json").read_bytes() == before
+    assert json.loads((config.out_dir() / "state.json").read_text()) == {"last_t0": T(13, 0).isoformat()}
+
+
+def test_obs_png_not_rewritten(env):
+    env["times"] = [T(12, 30), T(12, 40), T(12, 50), T(13, 0)]
+    assert run.cycle(T(13, 2)) == "published"
+    png = config.public_dir() / "obs_202608281300.png"
+    import os
+    os.utime(png, (1_000_000, 1_000_000))
+    env["times"] = [T(12, 40), T(12, 50), T(13, 0), T(14, 0)]
+    assert run.cycle(T(14, 2)) == "published"
+    assert png.stat().st_mtime == 1_000_000
+
+
+def test_forecast_failure_still_publishes_obs(env, monkeypatch):
+    def boom(*a, **k):
+        raise RuntimeError("pysteps broke")
+    monkeypatch.setattr(nowcast, "sprog", boom)
+    env["times"] = [T(12, 30), T(12, 40), T(12, 50), T(13, 0)]
+    assert run.cycle(T(13, 2)) == "published"
+    m = manifest()
+    assert m["forecast"] is None
+    assert [f["kind"] for f in m["frames"]] == ["obs"] * 4
+
+
+def test_verify_failure_does_not_fail_cycle(env, monkeypatch):
+    env["times"] = [T(12, 30), T(12, 40), T(12, 50), T(13, 0)]
+    assert run.cycle(T(13, 2)) == "published"
+
+    def boom(*a, **k):
+        raise RuntimeError("score broke")
+    monkeypatch.setattr(verify, "score", boom)
+    env["times"] = [T(13, 0), T(14, 0)]
+    assert run.cycle(T(14, 2)) == "published"

@@ -1,4 +1,5 @@
 """Warp radar fields to EPSG:3857 for a MapLibre image overlay and write palette PNGs."""
+import os
 from pathlib import Path
 
 import numpy as np
@@ -47,4 +48,7 @@ def save_png(dbz_3857: np.ndarray, path: Path) -> None:
     im = Image.fromarray(idx, "P")
     im.putpalette(_palette())
     alpha = bytes([0] + [config.PRECIP_ALPHA] * n + [config.NODATA_RGBA[3]])
-    im.save(path, optimize=True, transparency=alpha)
+    path = Path(path)
+    tmp = path.with_name(path.name + ".tmp")  # atomic: nginx may cache a partial file as immutable
+    im.save(tmp, format="PNG", optimize=True, transparency=alpha)
+    os.replace(tmp, path)
