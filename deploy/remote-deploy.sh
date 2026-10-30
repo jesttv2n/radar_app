@@ -25,7 +25,7 @@ systemctl enable -q --now radar-worker.timer
 systemctl start radar-worker.service
 journalctl -u radar-worker -n 5 --no-pager -o cat
 
-# Health-check: manifestet skal være offentligt og nyere end 30 min
+# Health-check: manifestet skal være offentligt; vis tiden for nyeste observation
 generated=$(curl -sf https://services.tv2nord.dk/radar/data/manifest.json | venv/bin/python -c \
-    'import json,sys; print(json.load(sys.stdin)["frames"][-1]["time"])')
-echo "seneste frame i manifest: $generated"
+    'import json,sys; print(next(f["time"] for f in json.load(sys.stdin)["frames"] if f["lead"] == 0))')
+echo "nyeste observation i manifest: $generated"
