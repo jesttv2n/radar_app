@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Scripts og units køres på Linux
+*.sh text eol=lf
+deploy/* text eol=lf

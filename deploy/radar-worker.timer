@@ -1,0 +1,10 @@
+[Unit]
+Description=Kør nedbørsradarens worker hvert 2. minut
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=2min
+AccuracySec=10s
+
+[Install]
+WantedBy=timers.target

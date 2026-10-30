@@ -1,0 +1,20 @@
+[Unit]
+Description=TV2 Nord nedbørsradar - én worker-cyklus
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+StateDirectory=radar
+WorkingDirectory=/var/www/services/radar
+Environment=RADAR_OUT=/var/lib/radar RADAR_CACHE=/var/lib/radar/cache
+Environment=MPLCONFIGDIR=/var/lib/radar/.mpl PYTHONUNBUFFERED=1
+ExecStart=/var/www/services/radar/venv/bin/python -m radar.run
+# Delt server: lav prioritet, max én kerne og et hårdt hukommelsesloft (målt peak ~830 MB)
+Nice=10
+CPUQuota=100%
+MemoryHigh=1000M
+MemoryMax=1200M
+TimeoutStartSec=300
