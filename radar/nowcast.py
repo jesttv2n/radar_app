@@ -1,4 +1,5 @@
 """S-PROG nowcast (pysteps) på dBZ-composites."""
+import logging
 from datetime import timedelta
 
 import numpy as np
@@ -7,6 +8,8 @@ from pysteps.utils import transformation
 
 from . import config
 from .grid import Composite
+
+log = logging.getLogger(__name__)
 
 NO_ECHO = -32.0
 MIN_RAIN_FRACTION = 1e-3  # min share of raining pixels in every motion frame for S-PROG
@@ -58,11 +61,15 @@ def sprog(frames: list[Composite], leads: int) -> np.ndarray:
     else:
         hist_db, meta = transformation.dB_transform(rate, threshold=config.RAIN_THR, zerovalue=-15.0)
         velocity = np.nan_to_num(motion.get_method("LK")(hist_db))
+        fc = None
         if raining.mean(axis=(1, 2)).min() >= MIN_RAIN_FRACTION:
-            fc_db = nowcasts.get_method("sprog")(hist_db, velocity, leads, n_cascade_levels=6,
-                                                 precip_thr=meta["threshold"])
-            fc = transformation.dB_transform(fc_db, threshold=-10.0, inverse=True)[0]
-        else:  # S-PROG needs rain in every frame; a (nearly) dry one gives NaN statistics
+            try:
+                fc_db = nowcasts.get_method("sprog")(hist_db, velocity, leads, n_cascade_levels=6,
+                                                     precip_thr=meta["threshold"])
+                fc = transformation.dB_transform(fc_db, threshold=-10.0, inverse=True)[0]
+            except np.linalg.LinAlgError:  # identical frames (stalled feed): singular AR(2) fit
+                log.warning("S-PROG failed, extrapolating instead", exc_info=True)
+        if fc is None:  # S-PROG needs distinct frames with rain; otherwise just advect the latest
             fc = nowcasts.get_method("extrapolation")(rate[-1], velocity, leads)
         out = to_dbz(np.nan_to_num(fc, nan=0.0)).astype(np.float32)
     out[:, np.isnan(last[-1].dbz)] = np.nan

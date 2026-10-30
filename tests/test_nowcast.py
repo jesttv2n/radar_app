@@ -80,6 +80,14 @@ def test_rain_then_dry_latest_gives_dry_forecast():
     assert np.all(out == -32)
 
 
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_identical_rainy_frames_fall_back_to_extrapolation():
+    frames = [blob_frame(100, t) for t in times(3)]
+    out = nowcast.sprog(frames, 3)
+    assert out.shape == (3, 300, 300)
+    assert abs(centroid_col(out[2] >= 20) - centroid_col(frames[-1].dbz >= 20)) <= 2
+
+
 def test_contiguous_tail_drops_before_gap():
     t = times(4)  # 12:30, 12:40, 12:50, 13:00
     frames = [make_frame(np.zeros((2, 2)), x) for x in (t[0], t[1], t[3])]
