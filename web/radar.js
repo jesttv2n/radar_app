@@ -31,19 +31,25 @@
     return (lead > 0 ? "+" : "−") + Math.abs(lead) + " min";
   }
 
-  var maplibreReady;
+  var maplibreReady, maplibreCss;
   function loadMaplibre() {
     if (window.maplibregl) return Promise.resolve(window.maplibregl);
+    if (!maplibreCss) {
+      maplibreCss = document.createElement("link");
+      maplibreCss.rel = "stylesheet";
+      maplibreCss.href = MAPLIBRE + ".css";
+      document.head.appendChild(maplibreCss);
+    }
     if (!maplibreReady) {
       maplibreReady = new Promise(function (resolve, reject) {
-        var css = document.createElement("link");
-        css.rel = "stylesheet";
-        css.href = MAPLIBRE + ".css";
-        document.head.appendChild(css);
         var js = document.createElement("script");
         js.src = MAPLIBRE + ".js";
         js.onload = function () { resolve(window.maplibregl); };
-        js.onerror = reject;
+        js.onerror = function (e) {
+          maplibreReady = null; // næste forsøg henter igen
+          js.remove();
+          reject(e);
+        };
         document.head.appendChild(js);
       });
     }
@@ -111,12 +117,14 @@
     el("div", "tv2nord-radar__attribution", footer).textContent = ATTRIBUTION;
 
     var manifest = null, idx = 0, timer = null, map = null, mapReady = false, preloaded = {};
+    var fetchFailed = false, mapFailed = false, mapLoading = false, refreshTimer = null;
 
     function frameUrl(f) { return new URL(f.url, base).href; }
 
     function setPlaying(on) {
       if (on && !timer) {
         timer = setInterval(function () {
+          if (!root.isConnected) return tick();
           show((idx + 1) % manifest.frames.length);
         }, PLAY_MS);
       } else if (!on && timer) {
@@ -133,8 +141,9 @@
       status.className = "tv2nord-radar__status" + (text ? " is-visible is-" + kind : "");
     }
 
-    function updateStatus(failed) {
-      if (failed) return setStatus("Radaren er ikke tilgængelig lige nu", "error");
+    function updateStatus() {
+      if (fetchFailed || mapFailed) return setStatus("Radaren er ikke tilgængelig lige nu", "error");
+      if (!manifest) return setStatus("", "info");
       var age = Math.round((Date.now() - Date.parse(manifest.generated)) / 60000);
       if (age > STALE_MIN) return setStatus("Data er " + age + " min gamle", "warning");
       var dry = manifest.frames.every(function (f) { return !(f.max_dbz >= RAIN_DBZ); });
@@ -192,7 +201,8 @@
       // Står man på "nu", følger man med til det nye "nu"; ellers bevares tidspunktet hvis det findes.
       var keep = atNow ? -1 : m.frames.findIndex(function (f) { return f.time === prev.time; });
       show(keep >= 0 ? keep : nowIndex(m.frames));
-      updateStatus(false);
+      fetchFailed = false;
+      updateStatus();
     }
 
     function refresh() {
@@ -205,7 +215,7 @@
           if (!m.frames || !m.frames.length) throw new Error("no frames");
           apply(m);
         })
-        .catch(function () { updateStatus(true); });
+        .catch(function () { fetchFailed = true; updateStatus(); });
     }
 
     play.addEventListener("click", function () { if (manifest) setPlaying(!timer); });
@@ -215,30 +225,65 @@
     });
     setPlaying(false);
 
-    loadMaplibre().then(function (maplibregl) {
-      map = new maplibregl.Map({
-        container: mapEl,
-        style: STYLE,
-        center: [9.9, 57.0],
-        zoom: 7.2,
-        minZoom: 5.5,
-        maxBounds: [[BBOX[0] - 1, BBOX[1] - 1], [BBOX[2] + 1, BBOX[3] + 1]],
-        cooperativeGestures: root.getAttribute("data-cooperative") !== "false",
-        attributionControl: { compact: true },
-        locale: {
-          "CooperativeGesturesHandler.WindowsHelpText": "Hold Ctrl nede og scroll for at zoome",
-          "CooperativeGesturesHandler.MacHelpText": "Hold ⌘ nede og scroll for at zoome",
-          "CooperativeGesturesHandler.MobileHelpText": "Brug to fingre til at flytte kortet",
-          "NavigationControl.ZoomIn": "Zoom ind",
-          "NavigationControl.ZoomOut": "Zoom ud"
-        }
-      });
-      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
-      map.on("load", function () { mapReady = true; drawImage(); });
-    }).catch(function () { updateStatus(true); });
+    function mapFail() {
+      mapLoading = false;
+      mapFailed = true;
+      if (map) { map.remove(); map = null; }
+      updateStatus();
+    }
 
+    function initMap() {
+      if (map || mapLoading) return;
+      mapLoading = true;
+      loadMaplibre().then(function (maplibregl) {
+        if (!root.isConnected) { mapLoading = false; return; }
+        map = new maplibregl.Map({
+          container: mapEl,
+          style: STYLE,
+          center: [9.9, 57.0],
+          zoom: 7.2,
+          minZoom: 5.5,
+          maxBounds: [[BBOX[0] - 1, BBOX[1] - 1], [BBOX[2] + 1, BBOX[3] + 1]],
+          cooperativeGestures: root.getAttribute("data-cooperative") !== "false",
+          attributionControl: { compact: true },
+          locale: {
+            "CooperativeGesturesHandler.WindowsHelpText": "Hold Ctrl nede og scroll for at zoome",
+            "CooperativeGesturesHandler.MacHelpText": "Hold ⌘ nede og scroll for at zoome",
+            "CooperativeGesturesHandler.MobileHelpText": "Brug to fingre til at flytte kortet",
+            "NavigationControl.ZoomIn": "Zoom ind",
+            "NavigationControl.ZoomOut": "Zoom ud"
+          }
+        });
+        map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+        map.on("load", function () {
+          mapLoading = false;
+          mapReady = true;
+          mapFailed = false;
+          drawImage();
+          updateStatus();
+        });
+        // Style-/tileserver nede før første load: vis fejl og prøv igen ved næste tick.
+        map.on("error", function (e) { if (!mapReady && !e.sourceId) mapFail(); });
+      }).catch(mapFail);
+    }
+
+    // Tick hvert 2. min: ryd op, hvis widgetten er fjernet fra DOM'en; spring over i skjult fane.
+    function tick() {
+      if (!root.isConnected) {
+        clearInterval(refreshTimer);
+        setPlaying(false);
+        if (map) map.remove();
+        map = null;
+        return;
+      }
+      if (document.hidden) return;
+      initMap();
+      refresh();
+    }
+
+    initMap();
     refresh();
-    setInterval(refresh, REFRESH_MS);
+    refreshTimer = setInterval(tick, REFRESH_MS);
   }
 
   function mountAll() {
