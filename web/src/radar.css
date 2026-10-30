@@ -70,3 +70,34 @@
     box-shadow: 0 0 0 4px color-mix(in oklab, var(--rd-thumb) 45%, transparent);
   }
 }
+
+/*
+ * MapLibre-kontroller i mørk tilstand. Bevidst UDEN for @layer: MapLibre's CSS er ulagdelt
+ * (og injiceres senere af radar.js), så lagdelte regler ville altid tabe. Hver selektor starter
+ * med `.dark .tv2nord-radar` (+0,2,0) og har dermed højere specificitet end MapLibre's egne,
+ * uanset rækkefølge.
+ */
+.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-group {
+  background: var(--rd-color-night);
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.15);
+}
+.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-group button + button {
+  border-top-color: rgb(255 255 255 / 0.2);
+}
+.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-group button:not(:disabled):hover {
+  background-color: rgb(255 255 255 / 0.1);
+}
+.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-attrib,
+.dark .tv2nord-radar .maplibregl-ctrl-attrib.maplibregl-ctrl.maplibregl-compact {
+  background-color: rgb(37 37 37 / 0.7);
+  color: var(--rd-color-light);
+}
+.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-attrib a {
+  color: var(--rd-color-light);
+}
+.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-button {
+  filter: invert(1);
+}

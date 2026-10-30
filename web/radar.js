@@ -79,7 +79,7 @@
       "rd:before:ml-[3px] rd:before:border-y-8 rd:before:border-r-0 rd:before:border-l-[13px] rd:before:border-solid rd:before:border-y-transparent rd:before:border-l-current rd:before:content-[''] rd:aria-pressed:before:ml-0 rd:aria-pressed:before:h-[15px] rd:aria-pressed:before:w-3 rd:aria-pressed:before:border-x-4 rd:aria-pressed:before:border-y-0 rd:aria-pressed:before:border-current",
     sr: "rd:sr-only",
     slider: "tv2nord-radar__slider rd:m-0 rd:h-11 rd:min-w-0 rd:flex-[1_1_160px] rd:cursor-pointer rd:appearance-none rd:bg-transparent rd:focus:outline-none rd:disabled:cursor-not-allowed rd:disabled:opacity-55",
-    time: "rd:flex-[1_0_100%] rd:font-semibold rd:tabular-nums rd:group-[.is-forecast]:before:text-salmon rd:group-[.is-forecast]:before:content-['Prognose_·_']",
+    time: "rd:flex-[1_0_100%] rd:font-semibold rd:tabular-nums rd:dark:group-[.is-forecast]:before:text-salmon rd:group-[.is-forecast]:before:content-['Prognose_·_']",
     footer: "rd:flex rd:flex-wrap rd:items-end rd:justify-between rd:gap-x-4 rd:gap-y-2 rd:pt-1 rd:pb-3 rd:text-xs rd:text-current/70",
     legend: "rd:min-w-40 rd:flex-[0_1_220px]",
     legendBar: "rd:h-2 rd:rounded-full",
@@ -142,7 +142,7 @@
 
     var manifest = null, idx = 0, timer = null, map = null, mapReady = false, preloaded = {};
     var fetchFailed = false, mapFailed = false, mapLoading = false, refreshTimer = null;
-    var styleReady = false, dark = isDark();
+    var styleReady = false, styleFailed = false, dark = isDark();
 
     // Mørk tilstand følger class="dark" på en forfader (tv2nord.dk sætter den på <html>).
     function isDark() { return !!root.closest(".dark"); }
@@ -180,7 +180,7 @@
     }
 
     function updateStatus() {
-      if (fetchFailed || mapFailed) return setStatus("Radaren er ikke tilgængelig lige nu", "error");
+      if (fetchFailed || mapFailed || styleFailed) return setStatus("Radaren er ikke tilgængelig lige nu", "error");
       if (!manifest) return setStatus("", "info");
       var newest = manifest.frames.filter(function (f) { return f.lead === 0; })[0] || manifest.frames[0];
       var age = Math.round((Date.now() - Date.parse(newest.time)) / 60000);
@@ -268,7 +268,7 @@
       mapLoading = false;
       mapFailed = true;
       if (map) { map.remove(); map = null; }
-      styleReady = false;
+      styleReady = styleFailed = false;
       updateStatus();
     }
 
@@ -297,6 +297,7 @@
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
         map.on("style.load", function () {
           styleReady = true;
+          if (styleFailed) { styleFailed = false; updateStatus(); }
           drawImage(); // også efter skift af basiskort: samme frame igen
         });
         map.on("load", function () {
@@ -307,7 +308,12 @@
           updateStatus();
         });
         // Style-/tileserver nede før første load: vis fejl og prøv igen ved næste tick.
-        map.on("error", function (e) { if (!mapReady && !e.sourceId) mapFail(); });
+        // Fejler et senere style-skift (fx tema), vises fejlen, og tick prøver setStyle igen.
+        map.on("error", function (e) {
+          if (e.sourceId) return;
+          if (!mapReady) return mapFail();
+          if (!styleReady && !styleFailed) { styleFailed = true; updateStatus(); }
+        });
       }).catch(mapFail);
     }
 
@@ -322,6 +328,7 @@
         return;
       }
       if (document.hidden) return;
+      if (map && styleFailed) map.setStyle(styleUrl(), { diff: false });
       initMap();
       refresh();
     }
