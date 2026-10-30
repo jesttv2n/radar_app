@@ -3,7 +3,7 @@
   "private": true,
   "description": "Bygger web/radar.css fra web/src/radar.css med Tailwind CLI",
   "scripts": {
-    "build": "tailwindcss -i src/radar.css -o radar.css --minify && node scripts/scope-properties.mjs"
+    "build": "tailwindcss -i src/radar.css -o radar.css --minify && node scripts/scope-properties.mjs && node scripts/build-statamic.mjs"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.3.3",

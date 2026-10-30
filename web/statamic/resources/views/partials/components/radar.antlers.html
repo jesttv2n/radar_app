@@ -1,3 +1,355 @@
-<link rel="stylesheet" href="https://services.tv2nord.dk/radar/radar.css">
+{{# GENERERET af web/scripts/build-statamic.mjs – ret web/radar.js eller web/src/radar.css og kør "npm run build" i web/ #}}
+{{ noparse }}
+<style>/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */
+@layer properties{@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b)))){.tv2nord-radar,.tv2nord-radar *,.tv2nord-radar :before,.tv2nord-radar :after{--tw-translate-x:0;--tw-translate-y:0;--tw-translate-z:0;--tw-border-style:solid;--tw-leading:initial;--tw-font-weight:initial;--tw-tracking:initial;--tw-ordinal:initial;--tw-slashed-zero:initial;--tw-numeric-figure:initial;--tw-numeric-spacing:initial;--tw-numeric-fraction:initial;--tw-shadow:0 0 #0000;--tw-shadow-color:initial;--tw-shadow-alpha:100%;--tw-inset-shadow:0 0 #0000;--tw-inset-shadow-color:initial;--tw-inset-shadow-alpha:100%;--tw-ring-color:initial;--tw-ring-shadow:0 0 #0000;--tw-inset-ring-color:initial;--tw-inset-ring-shadow:0 0 #0000;--tw-ring-inset:initial;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-offset-shadow:0 0 #0000;--tw-content:"";--tw-outline-style:solid}}}@layer theme{:root,:host{--rd-font-sans:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";--rd-color-red-300:oklch(80.8% .114 19.571);--rd-color-red-700:oklch(50.5% .213 27.518);--rd-color-white:#fff;--rd-spacing:.25rem;--rd-text-xs:.75rem;--rd-text-xs--line-height:calc(1 / .75);--rd-text-sm:.875rem;--rd-text-sm--line-height:calc(1.25 / .875);--rd-text-2xl:1.5rem;--rd-text-2xl--line-height:calc(2 / 1.5);--rd-font-weight-semibold:600;--rd-font-weight-bold:700;--rd-leading-normal:1.5;--rd-radius-md:.375rem;--rd-radius-lg:.5rem;--rd-default-transition-duration:.15s;--rd-default-transition-timing-function:cubic-bezier(.4, 0, .2, 1);--rd-color-midnight:#000523;--rd-color-salmon:#eb8c82;--rd-color-light:#fff5f0;--rd-color-ink:#0c0c0c;--rd-color-night:#252525}}@layer base;@layer components{.tv2nord-radar__slider{--rd-observed:var(--rd-color-midnight);--rd-forecast:var(--rd-color-salmon);--rd-thumb:var(--rd-observed);--rd-thumb-ring:#fff;--rd-track:linear-gradient(to right, var(--rd-observed) 0 var(--tv2nord-radar-split,100%), var(--rd-forecast) var(--tv2nord-radar-split,100%) 100%)}.tv2nord-radar__slider:where(.dark,.dark *){--rd-observed:var(--rd-color-light);--rd-thumb-ring:var(--rd-color-night)}.is-forecast .tv2nord-radar__slider{--rd-thumb:var(--rd-forecast)}.tv2nord-radar__slider::-webkit-slider-runnable-track{background:var(--rd-track);border-radius:4px;height:8px}.tv2nord-radar__slider::-moz-range-track{background:var(--rd-track);border-radius:4px;height:8px}.tv2nord-radar__slider::-webkit-slider-thumb{appearance:none;box-sizing:border-box;border:3px solid var(--rd-thumb-ring);background:var(--rd-thumb);border-radius:50%;width:26px;height:26px;margin-top:-9px;box-shadow:0 1px 4px #00000059}.tv2nord-radar__slider::-moz-range-thumb{box-sizing:border-box;border:3px solid var(--rd-thumb-ring);background:var(--rd-thumb);border-radius:50%;width:26px;height:26px;box-shadow:0 1px 4px #00000059}.tv2nord-radar__slider:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(--rd-thumb)}@supports (color:color-mix(in lab, red, red)){.tv2nord-radar__slider:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px color-mix(in oklab, var(--rd-thumb) 45%, transparent)}}.tv2nord-radar__slider:focus-visible::-moz-range-thumb{box-shadow:0 0 0 4px var(--rd-thumb)}@supports (color:color-mix(in lab, red, red)){.tv2nord-radar__slider:focus-visible::-moz-range-thumb{box-shadow:0 0 0 4px color-mix(in oklab, var(--rd-thumb) 45%, transparent)}}}@layer utilities{.rd\:\@container{container-type:inline-size}.rd\:sr-only{clip-path:inset(50%);white-space:nowrap;border-width:0;width:1px;height:1px;margin:-1px;padding:0;position:absolute;overflow:hidden}.rd\:absolute{position:absolute}.rd\:relative{position:relative}.rd\:top-2\.5{top:calc(var(--rd-spacing) * 2.5)}.rd\:top-12{top:calc(var(--rd-spacing) * 12)}.rd\:left-1\/2{left:50%}.rd\:left-2\.5{left:calc(var(--rd-spacing) * 2.5)}.rd\:isolate{isolation:isolate}.rd\:z-2{z-index:2}.rd\:m-0{margin:0}.rd\:mx-auto{margin-inline:auto}.rd\:mt-0{margin-top:0}.rd\:mt-0\.5{margin-top:calc(var(--rd-spacing) * .5)}.rd\:mb-1{margin-bottom:var(--rd-spacing)}.rd\:mb-4{margin-bottom:calc(var(--rd-spacing) * 4)}.rd\:box-border{box-sizing:border-box}.rd\:block{display:block}.rd\:flex{display:flex}.rd\:hidden{display:none}.rd\:h-2{height:calc(var(--rd-spacing) * 2)}.rd\:h-11{height:calc(var(--rd-spacing) * 11)}.rd\:h-\[clamp\(220px\,75cqw\,var\(--tv2nord-radar-max-height\,620px\)\)\]{height:clamp(220px, 75cqw, var(--tv2nord-radar-max-height,620px))}.rd\:h-full{height:100%}.rd\:w-11{width:calc(var(--rd-spacing) * 11)}.rd\:w-full{width:100%}.rd\:max-w-\[1100px\]{max-width:1100px}.rd\:max-w-\[calc\(100\%-120px\)\]{max-width:calc(100% - 120px)}.rd\:max-w-full{max-width:100%}.rd\:min-w-0{min-width:0}.rd\:min-w-40{min-width:calc(var(--rd-spacing) * 40)}.rd\:flex-\[0_0_44px\]{flex:0 0 44px}.rd\:flex-\[0_1_220px\]{flex:0 220px}.rd\:flex-\[1_0_100\%\]{flex:1 0 100%}.rd\:flex-\[1_1_160px\]{flex:160px}.rd\:-translate-x-1\/2{--tw-translate-x:calc(calc(1 / 2 * 100%) * -1);translate:var(--tw-translate-x) var(--tw-translate-y)}.rd\:cursor-pointer{cursor:pointer}.rd\:appearance-none{appearance:none}.rd\:flex-wrap{flex-wrap:wrap}.rd\:items-center{align-items:center}.rd\:items-end{align-items:flex-end}.rd\:justify-between{justify-content:space-between}.rd\:justify-center{justify-content:center}.rd\:gap-x-3{column-gap:calc(var(--rd-spacing) * 3)}.rd\:gap-x-4{column-gap:calc(var(--rd-spacing) * 4)}.rd\:gap-y-2{row-gap:calc(var(--rd-spacing) * 2)}.rd\:overflow-hidden{overflow:hidden}.rd\:rounded-full{border-radius:3.40282e38px}.rd\:rounded-lg{border-radius:var(--rd-radius-lg)}.rd\:rounded-md{border-radius:var(--rd-radius-md)}.rd\:border{border-style:var(--tw-border-style);border-width:1px}.rd\:border-0{border-style:var(--tw-border-style);border-width:0}.rd\:border-solid{--tw-border-style:solid;border-style:solid}.rd\:border-ink\/15{border-color:var(--rd-color-ink)}@supports (color:color-mix(in lab, red, red)){.rd\:border-ink\/15{border-color:color-mix(in oklab, var(--rd-color-ink) 15%, transparent)}}.rd\:bg-light{background-color:var(--rd-color-light)}.rd\:bg-midnight{background-color:var(--rd-color-midnight)}.rd\:bg-salmon{background-color:var(--rd-color-salmon)}.rd\:bg-transparent{background-color:#0000}.rd\:p-0{padding:0}.rd\:px-2\.5{padding-inline:calc(var(--rd-spacing) * 2.5)}.rd\:px-3\.5{padding-inline:calc(var(--rd-spacing) * 3.5)}.rd\:px-4{padding-inline:calc(var(--rd-spacing) * 4)}.rd\:py-1{padding-block:var(--rd-spacing)}.rd\:py-2{padding-block:calc(var(--rd-spacing) * 2)}.rd\:pt-1{padding-top:var(--rd-spacing)}.rd\:pt-3{padding-top:calc(var(--rd-spacing) * 3)}.rd\:pt-6{padding-top:calc(var(--rd-spacing) * 6)}.rd\:pb-1{padding-bottom:var(--rd-spacing)}.rd\:pb-3{padding-bottom:calc(var(--rd-spacing) * 3)}.rd\:pb-12{padding-bottom:calc(var(--rd-spacing) * 12)}.rd\:text-center{text-align:center}.rd\:text-left{text-align:left}.rd\:font-sans{font-family:var(--rd-font-sans)}.rd\:text-2xl{font-size:var(--rd-text-2xl);line-height:var(--tw-leading,var(--rd-text-2xl--line-height))}.rd\:text-sm{font-size:var(--rd-text-sm);line-height:var(--tw-leading,var(--rd-text-sm--line-height))}.rd\:text-xs{font-size:var(--rd-text-xs);line-height:var(--tw-leading,var(--rd-text-xs--line-height))}.rd\:leading-normal{--tw-leading:var(--rd-leading-normal);line-height:var(--rd-leading-normal)}.rd\:font-bold{--tw-font-weight:var(--rd-font-weight-bold);font-weight:var(--rd-font-weight-bold)}.rd\:font-semibold{--tw-font-weight:var(--rd-font-weight-semibold);font-weight:var(--rd-font-weight-semibold)}.rd\:tracking-\[0\.06em\]{--tw-tracking:.06em;letter-spacing:.06em}.rd\:text-current\/70{color:currentColor}@supports (color:color-mix(in lab, red, red)){.rd\:text-current\/70{color:color-mix(in oklab, currentcolor 70%, transparent)}}.rd\:text-inherit{color:inherit}.rd\:text-ink{color:var(--rd-color-ink)}.rd\:text-white{color:var(--rd-color-white)}.rd\:uppercase{text-transform:uppercase}.rd\:tabular-nums{--tw-numeric-spacing:tabular-nums;font-variant-numeric:var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,)}.rd\:shadow-md{--tw-shadow:0 4px 6px -1px var(--tw-shadow-color,#0000001a), 0 2px 4px -2px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)}.rd\:transition-opacity{transition-property:opacity;transition-timing-function:var(--tw-ease,var(--rd-default-transition-timing-function));transition-duration:var(--tw-duration,var(--rd-default-transition-duration))}.rd\:\[font\:inherit\]{font:inherit}.rd\:group-\[\.is-forecast\]\:block:is(:where(.rd\:group).is-forecast *){display:block}.rd\:before\:ml-\[3px\]:before{content:var(--tw-content);margin-left:3px}.rd\:before\:border-y-8:before{content:var(--tw-content);border-block-style:var(--tw-border-style);border-block-width:8px}.rd\:before\:border-r-0:before{content:var(--tw-content);border-right-style:var(--tw-border-style);border-right-width:0}.rd\:before\:border-l-\[13px\]:before{content:var(--tw-content);border-left-style:var(--tw-border-style);border-left-width:13px}.rd\:before\:border-solid:before{content:var(--tw-content);--tw-border-style:solid;border-style:solid}.rd\:before\:border-y-transparent:before{content:var(--tw-content);border-block-color:#0000}.rd\:before\:border-l-current:before{content:var(--tw-content);border-left-color:currentColor}.rd\:before\:content-\[\'\'\]:before{--tw-content:"";content:var(--tw-content)}.rd\:group-\[\.is-forecast\]\:before\:content-\[\'Prognose_·_\'\]:is(:where(.rd\:group).is-forecast *):before{--tw-content:"Prognose · ";content:var(--tw-content)}.rd\:empty\:hidden:empty{display:none}.rd\:focus\:outline-none:focus{--tw-outline-style:none;outline-style:none}.rd\:focus-visible\:outline-3:focus-visible{outline-style:var(--tw-outline-style);outline-width:3px}.rd\:focus-visible\:outline-offset-2:focus-visible{outline-offset:2px}.rd\:focus-visible\:outline-salmon:focus-visible{outline-color:var(--rd-color-salmon)}@media (hover:hover){.rd\:hover\:enabled\:opacity-85:hover:enabled{opacity:.85}}.rd\:disabled\:cursor-not-allowed:disabled{cursor:not-allowed}.rd\:disabled\:opacity-55:disabled{opacity:.55}.rd\:aria-pressed\:before\:ml-0[aria-pressed=true]:before{content:var(--tw-content);margin-left:0}.rd\:aria-pressed\:before\:h-\[15px\][aria-pressed=true]:before{content:var(--tw-content);height:15px}.rd\:aria-pressed\:before\:w-3[aria-pressed=true]:before{content:var(--tw-content);width:calc(var(--rd-spacing) * 3)}.rd\:aria-pressed\:before\:border-x-4[aria-pressed=true]:before{content:var(--tw-content);border-inline-style:var(--tw-border-style);border-inline-width:4px}.rd\:aria-pressed\:before\:border-y-0[aria-pressed=true]:before{content:var(--tw-content);border-block-style:var(--tw-border-style);border-block-width:0}.rd\:aria-pressed\:before\:border-current[aria-pressed=true]:before{content:var(--tw-content);border-color:currentColor}.rd\:data-\[kind\=error\]\:border-current[data-kind=error]{border-color:currentColor}.rd\:data-\[kind\=error\]\:text-red-700[data-kind=error]{color:var(--rd-color-red-700)}.rd\:data-\[kind\=warning\]\:border-salmon[data-kind=warning]{border-color:var(--rd-color-salmon)}.rd\:dark\:border-white\/20:where(.dark,.dark *){border-color:var(--rd-color-white)}@supports (color:color-mix(in lab, red, red)){.rd\:dark\:border-white\/20:where(.dark,.dark *){border-color:color-mix(in oklab, var(--rd-color-white) 20%, transparent)}}.rd\:dark\:bg-light:where(.dark,.dark *){background-color:var(--rd-color-light)}.rd\:dark\:bg-night:where(.dark,.dark *){background-color:var(--rd-color-night)}.rd\:dark\:text-midnight:where(.dark,.dark *){color:var(--rd-color-midnight)}.rd\:dark\:text-white:where(.dark,.dark *){color:var(--rd-color-white)}.rd\:dark\:group-\[\.is-forecast\]\:before\:text-salmon:where(.dark,.dark *):is(:where(.rd\:group).is-forecast *):before{content:var(--tw-content);color:var(--rd-color-salmon)}.rd\:dark\:data-\[kind\=error\]\:text-red-300:where(.dark,.dark *)[data-kind=error]{color:var(--rd-color-red-300)}}.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-group{background:var(--rd-color-night);box-shadow:0 0 0 2px #ffffff26}.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-group button+button{border-top-color:#fff3}.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-group button:not(:disabled):hover{background-color:#ffffff1a}.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-group button .maplibregl-ctrl-icon{filter:invert()}.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-attrib,.dark .tv2nord-radar .maplibregl-ctrl-attrib.maplibregl-ctrl.maplibregl-compact{color:var(--rd-color-light);background-color:#252525b3}.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-attrib a{color:var(--rd-color-light)}.dark .tv2nord-radar .maplibregl-ctrl.maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-button{filter:invert()}@property --tw-translate-x{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-y{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-z{syntax:"*";inherits:false;initial-value:0}@property --tw-border-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-leading{syntax:"*";inherits:false}@property --tw-font-weight{syntax:"*";inherits:false}@property --tw-tracking{syntax:"*";inherits:false}@property --tw-ordinal{syntax:"*";inherits:false}@property --tw-slashed-zero{syntax:"*";inherits:false}@property --tw-numeric-figure{syntax:"*";inherits:false}@property --tw-numeric-spacing{syntax:"*";inherits:false}@property --tw-numeric-fraction{syntax:"*";inherits:false}@property --tw-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-shadow-color{syntax:"*";inherits:false}@property --tw-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-inset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-shadow-color{syntax:"*";inherits:false}@property --tw-inset-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-ring-color{syntax:"*";inherits:false}@property --tw-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-ring-color{syntax:"*";inherits:false}@property --tw-inset-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-ring-inset{syntax:"*";inherits:false}@property --tw-ring-offset-width{syntax:"<length>";inherits:false;initial-value:0}@property --tw-ring-offset-color{syntax:"*";inherits:false;initial-value:#fff}@property --tw-ring-offset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-content{syntax:"*";inherits:false;initial-value:""}@property --tw-outline-style{syntax:"*";inherits:false;initial-value:solid}</style>
 <div data-tv2nord-radar data-src="https://services.tv2nord.dk/radar/data/"></div>
-<script src="https://services.tv2nord.dk/radar/radar.js" defer></script>
+<script>/* TV2 Nord nedbørsradar: <div data-tv2nord-radar data-src="…/data/"></div> + radar.css + radar.js
+   Styling: Tailwind-utilities med prefix rd (web/src/radar.css -> web/radar.css). Klasser står som
+   hele strenge, så Tailwind-scanneren finder dem. Mørk tilstand: class="dark" på en forfader. */
+(function () {
+  "use strict";
+  // Indlæst igen (fx to radar-komponenter på samme side): montér kun de nye elementer
+  if (window.TV2NordRadar) { window.TV2NordRadar.mountAll(); return; }
+
+  var MAPLIBRE = "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl";
+  var STYLE = "https://tiles.openfreemap.org/styles/positron";
+  var STYLE_DARK = "https://tiles.openfreemap.org/styles/dark";
+  var DEFAULT_SRC = "https://services.tv2nord.dk/radar/data/";
+  var BBOX = [7.6, 54.4, 15.4, 57.9];
+  var NORDJYLLAND = [[8.15, 56.55], [11.25, 57.78]]; // startudsnit: hele regionen ved enhver bredde
+  var ATTRIBUTION = "Radardata: DMI (CC BY 4.0)";
+  var REFRESH_MS = 2 * 60 * 1000;
+  var PLAY_MS = 700;
+  var STALE_MIN = 45; // 30 min data age + DMI delay; measured from the newest observation
+  var RAIN_DBZ = 10;
+  var LEGEND = ["#a6e3ff", "#5ab4f0", "#2a7fd4", "#1f4fa8", "#2fae3c", "#f2e030", "#f5a623", "#e8452c", "#b81f5b", "#7a1fa2"];
+
+  var FMT = new Intl.DateTimeFormat("da-DK", {
+    timeZone: "Europe/Copenhagen", day: "numeric", month: "short",
+    hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+  });
+
+  // "25. okt. 02.30" i dansk tid
+  function formatTime(iso) {
+    var p = {};
+    FMT.formatToParts(new Date(iso)).forEach(function (x) { p[x.type] = x.value; });
+    return p.day + ". " + p.month + " " + p.hour + "." + p.minute;
+  }
+
+  function relative(lead) {
+    if (lead === 0) return "nu";
+    return (lead > 0 ? "+" : "−") + Math.abs(lead) + " min";
+  }
+
+  var maplibreReady, maplibreCss;
+  function loadMaplibre() {
+    if (window.maplibregl) return Promise.resolve(window.maplibregl);
+    if (!maplibreCss) {
+      maplibreCss = document.createElement("link");
+      maplibreCss.rel = "stylesheet";
+      maplibreCss.href = MAPLIBRE + ".css";
+      document.head.appendChild(maplibreCss);
+    }
+    if (!maplibreReady) {
+      maplibreReady = new Promise(function (resolve, reject) {
+        var js = document.createElement("script");
+        js.src = MAPLIBRE + ".js";
+        js.onload = function () { resolve(window.maplibregl); };
+        js.onerror = function (e) {
+          maplibreReady = null; // næste forsøg henter igen
+          js.remove();
+          reject(e);
+        };
+        document.head.appendChild(js);
+      });
+    }
+    return maplibreReady;
+  }
+
+  function el(tag, cls, parent) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  // Tailwind-klasser (prefix rd). Roden har ingen baggrund/ramme; font og farve arves.
+  var CLS = {
+    root: "rd:group rd:relative rd:block rd:w-full rd:max-w-full rd:@container rd:[font:inherit] rd:text-inherit rd:text-left",
+    stage: "rd:relative rd:isolate rd:h-[clamp(220px,75cqw,var(--tv2nord-radar-max-height,620px))] rd:overflow-hidden rd:rounded-md",
+    map: "rd:h-full rd:w-full",
+    badge: "rd:absolute rd:top-2.5 rd:left-2.5 rd:z-2 rd:hidden rd:group-[.is-forecast]:block rd:rounded-full rd:bg-salmon rd:px-2.5 rd:py-1 rd:text-xs rd:leading-normal rd:font-bold rd:tracking-[0.06em] rd:text-ink rd:uppercase rd:shadow-md",
+    status: "rd:absolute rd:top-12 rd:left-1/2 rd:z-2 rd:block rd:empty:hidden rd:max-w-[calc(100%-120px)] rd:-translate-x-1/2 rd:box-border rd:rounded-lg rd:border rd:border-solid rd:border-ink/15 rd:bg-light rd:px-3.5 rd:py-2 rd:text-center rd:text-sm rd:font-semibold rd:text-ink rd:shadow-md rd:dark:border-white/20 rd:dark:bg-night rd:dark:text-white rd:data-[kind=warning]:border-salmon rd:data-[kind=error]:border-current rd:data-[kind=error]:text-red-700 rd:dark:data-[kind=error]:text-red-300",
+    controls: "rd:flex rd:flex-wrap rd:items-center rd:gap-x-3 rd:gap-y-2 rd:pt-3 rd:pb-1",
+    play: "rd:flex rd:h-11 rd:w-11 rd:flex-[0_0_44px] rd:cursor-pointer rd:items-center rd:justify-center rd:rounded-full rd:border-0 rd:bg-midnight rd:p-0 rd:text-white rd:transition-opacity rd:hover:enabled:opacity-85 rd:disabled:cursor-not-allowed rd:disabled:opacity-55 rd:focus-visible:outline-3 rd:focus-visible:outline-offset-2 rd:focus-visible:outline-salmon rd:dark:bg-light rd:dark:text-midnight " +
+      "rd:before:ml-[3px] rd:before:border-y-8 rd:before:border-r-0 rd:before:border-l-[13px] rd:before:border-solid rd:before:border-y-transparent rd:before:border-l-current rd:before:content-[''] rd:aria-pressed:before:ml-0 rd:aria-pressed:before:h-[15px] rd:aria-pressed:before:w-3 rd:aria-pressed:before:border-x-4 rd:aria-pressed:before:border-y-0 rd:aria-pressed:before:border-current",
+    sr: "rd:sr-only",
+    slider: "tv2nord-radar__slider rd:m-0 rd:h-11 rd:min-w-0 rd:flex-[1_1_160px] rd:cursor-pointer rd:appearance-none rd:bg-transparent rd:focus:outline-none rd:disabled:cursor-not-allowed rd:disabled:opacity-55",
+    time: "rd:flex-[1_0_100%] rd:font-semibold rd:tabular-nums rd:dark:group-[.is-forecast]:before:text-salmon rd:group-[.is-forecast]:before:content-['Prognose_·_']",
+    footer: "rd:flex rd:flex-wrap rd:items-end rd:justify-between rd:gap-x-4 rd:gap-y-2 rd:pt-1 rd:pb-3 rd:text-xs rd:text-current/70",
+    legend: "rd:min-w-40 rd:flex-[0_1_220px]",
+    legendBar: "rd:h-2 rd:rounded-full",
+    legendWords: "rd:mt-0.5 rd:flex rd:justify-between"
+  };
+
+  var count = 0;
+
+  function mount(root) {
+    if (root.__tv2nordRadar) return;
+    root.__tv2nordRadar = true;
+    var id = "tv2nord-radar-" + (++count);
+    var src = root.getAttribute("data-src") || DEFAULT_SRC;
+    if (src.slice(-1) !== "/") src += "/";
+    var base = new URL(src, location.href);
+
+    root.classList.add("tv2nord-radar");
+    CLS.root.split(" ").forEach(function (c) { root.classList.add(c); });
+    root.setAttribute("role", "region");
+    root.setAttribute("aria-label", "Nedbørsradar");
+
+    var stage = el("div", CLS.stage, root);
+    var mapEl = el("div", CLS.map, stage);
+    mapEl.id = id + "-map";
+    var badge = el("div", CLS.badge, stage);
+    badge.textContent = "Prognose";
+    var status = el("div", CLS.status, stage);
+    status.id = id + "-status";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+
+    var controls = el("div", CLS.controls, root);
+    var play = el("button", CLS.play, controls);
+    play.type = "button";
+    play.id = id + "-play";
+    play.disabled = true;
+    var label = el("label", CLS.sr, controls);
+    label.htmlFor = id + "-slider";
+    label.textContent = "Tidspunkt";
+    var slider = el("input", CLS.slider, controls);
+    slider.type = "range";
+    slider.id = id + "-slider";
+    slider.min = 0;
+    slider.max = 0;
+    slider.step = 1;
+    slider.disabled = true;
+    var time = el("div", CLS.time, controls);
+    time.id = id + "-time";
+    time.setAttribute("aria-hidden", "true");
+
+    var footer = el("div", CLS.footer, root);
+    var legend = el("div", CLS.legend, footer);
+    legend.setAttribute("role", "img");
+    legend.setAttribute("aria-label", "Nedbør: let, moderat, kraftig");
+    var bar = el("div", CLS.legendBar, legend);
+    bar.style.background = "linear-gradient(to right, " + LEGEND.join(", ") + ")";
+    var words = el("div", CLS.legendWords, legend);
+    ["let", "moderat", "kraftig"].forEach(function (w) { el("span", "", words).textContent = w; });
+    el("div", "", footer).textContent = ATTRIBUTION;
+
+    var manifest = null, idx = 0, timer = null, map = null, mapReady = false, preloaded = {};
+    var fetchFailed = false, mapFailed = false, mapLoading = false, refreshTimer = null;
+    var styleReady = false, styleFailed = false, dark = isDark();
+
+    // Mørk tilstand følger class="dark" på en forfader (tv2nord.dk sætter den på <html>).
+    function isDark() { return !!root.closest(".dark"); }
+    function styleUrl() { return dark ? STYLE_DARK : STYLE; }
+    var themeObserver = new MutationObserver(function () {
+      var d = isDark();
+      if (d === dark) return;
+      dark = d;
+      if (map) {
+        styleReady = false; // radar-source/-layer genskabes på style.load
+        map.setStyle(styleUrl(), { diff: false });
+      }
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
+    function frameUrl(f) { return new URL(f.url, base).href; }
+
+    function setPlaying(on) {
+      if (on && !timer) {
+        timer = setInterval(function () {
+          if (!root.isConnected) return tick();
+          show((idx + 1) % manifest.frames.length);
+        }, PLAY_MS);
+      } else if (!on && timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+      play.setAttribute("aria-label", timer ? "Pause" : "Afspil");
+      play.setAttribute("aria-pressed", timer ? "true" : "false");
+    }
+
+    function setStatus(text, kind) {
+      status.textContent = text || "";
+      status.setAttribute("data-kind", kind); // tom tekst skjules af rd:empty:hidden
+    }
+
+    function updateStatus() {
+      if (fetchFailed || mapFailed || styleFailed) return setStatus("Radaren er ikke tilgængelig lige nu", "error");
+      if (!manifest) return setStatus("", "info");
+      var newest = manifest.frames.filter(function (f) { return f.lead === 0; })[0] || manifest.frames[0];
+      var age = Math.round((Date.now() - Date.parse(newest.time)) / 60000);
+      if (age > STALE_MIN) return setStatus("Data er " + age + " min gamle", "warning");
+      var dry = manifest.frames.every(function (f) { return !(f.max_dbz >= RAIN_DBZ); });
+      setStatus(dry ? "Ingen nedbør i området" : "", "info");
+    }
+
+    function drawImage() {
+      if (!mapReady || !styleReady || !manifest) return;
+      var f = manifest.frames[idx];
+      var source = map.getSource("tv2nord-radar");
+      if (source) {
+        source.updateImage({ url: frameUrl(f), coordinates: manifest.coordinates });
+        return;
+      }
+      map.addSource("tv2nord-radar", { type: "image", url: frameUrl(f), coordinates: manifest.coordinates });
+      var labels = map.getStyle().layers.filter(function (l) { return l.type === "symbol"; })[0];
+      map.addLayer({
+        id: "tv2nord-radar", type: "raster", source: "tv2nord-radar",
+        paint: { "raster-opacity": 0.75, "raster-fade-duration": 0 }
+      }, labels && labels.id);
+    }
+
+    function show(i) {
+      idx = i;
+      var f = manifest.frames[i];
+      var text = formatTime(f.time) + " · " + relative(f.lead);
+      slider.value = i;
+      slider.setAttribute("aria-valuetext", (f.kind === "forecast" ? "Prognose " : "") + text);
+      time.textContent = text;
+      root.classList.toggle("is-forecast", f.kind === "forecast");
+      drawImage();
+    }
+
+    function nowIndex(frames) {
+      for (var i = frames.length - 1; i >= 0; i--) if (frames[i].lead === 0) return i;
+      return frames.length - 1;
+    }
+
+    function apply(m) {
+      var prev = manifest && manifest.frames[idx];
+      var atNow = !prev || prev.lead === 0;
+      manifest = m;
+      var keepImgs = {};  // preload alle frames; glem dem, manifestet ikke længere nævner
+      m.frames.forEach(function (f) {
+        var u = frameUrl(f);
+        if (!preloaded[u]) { preloaded[u] = new Image(); preloaded[u].src = u; }
+        keepImgs[u] = preloaded[u];
+      });
+      preloaded = keepImgs;
+      var n = m.frames.length;
+      slider.max = n - 1;
+      slider.disabled = play.disabled = false;
+      var split = n > 1 ? (nowIndex(m.frames) + 0.5) / (n - 1) * 100 : 100;
+      root.style.setProperty("--tv2nord-radar-split", Math.min(split, 100) + "%");
+      // Står man på "nu", følger man med til det nye "nu"; ellers bevares tidspunktet hvis det findes.
+      var keep = atNow ? -1 : m.frames.findIndex(function (f) { return f.time === prev.time; });
+      show(keep >= 0 ? keep : nowIndex(m.frames));
+      fetchFailed = false;
+      updateStatus();
+    }
+
+    function refresh() {
+      return fetch(new URL("manifest.json", base).href, { cache: "no-cache" })
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (m) {
+          if (!m.frames || !m.frames.length) throw new Error("no frames");
+          apply(m);
+        })
+        .catch(function () { fetchFailed = true; updateStatus(); });
+    }
+
+    play.addEventListener("click", function () { if (manifest) setPlaying(!timer); });
+    slider.addEventListener("input", function () {
+      setPlaying(false);
+      show(+slider.value);
+    });
+    setPlaying(false);
+
+    function mapFail() {
+      mapLoading = false;
+      mapFailed = true;
+      if (map) { map.remove(); map = null; }
+      styleReady = styleFailed = false;
+      updateStatus();
+    }
+
+    function initMap() {
+      if (map || mapLoading) return;
+      mapLoading = true;
+      loadMaplibre().then(function (maplibregl) {
+        if (!root.isConnected) { mapLoading = false; return; }
+        map = new maplibregl.Map({
+          container: mapEl,
+          style: styleUrl(),
+          bounds: NORDJYLLAND,
+          fitBoundsOptions: { padding: 8 },
+          minZoom: 5.5,
+          maxBounds: [[BBOX[0] - 1, BBOX[1] - 1], [BBOX[2] + 1, BBOX[3] + 1]],
+          cooperativeGestures: root.getAttribute("data-cooperative") !== "false",
+          attributionControl: { compact: true },
+          locale: {
+            "CooperativeGesturesHandler.WindowsHelpText": "Hold Ctrl nede og scroll for at zoome",
+            "CooperativeGesturesHandler.MacHelpText": "Hold ⌘ nede og scroll for at zoome",
+            "CooperativeGesturesHandler.MobileHelpText": "Brug to fingre til at flytte kortet",
+            "NavigationControl.ZoomIn": "Zoom ind",
+            "NavigationControl.ZoomOut": "Zoom ud"
+          }
+        });
+        map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+        map.on("style.load", function () {
+          styleReady = true;
+          if (styleFailed) { styleFailed = false; updateStatus(); }
+          drawImage(); // også efter skift af basiskort: samme frame igen
+        });
+        map.on("load", function () {
+          mapLoading = false;
+          mapReady = true;
+          mapFailed = false;
+          drawImage();
+          updateStatus();
+        });
+        // Style-/tileserver nede før første load: vis fejl og prøv igen ved næste tick.
+        // Fejler et senere style-skift (fx tema), vises fejlen, og tick prøver setStyle igen.
+        map.on("error", function (e) {
+          if (e.sourceId) return;
+          if (!mapReady) return mapFail();
+          if (!styleReady && !styleFailed) { styleFailed = true; updateStatus(); }
+        });
+      }).catch(mapFail);
+    }
+
+    // Tick hvert 2. min: ryd op, hvis widgetten er fjernet fra DOM'en; spring over i skjult fane.
+    function tick() {
+      if (!root.isConnected) {
+        clearInterval(refreshTimer);
+        themeObserver.disconnect();
+        setPlaying(false);
+        if (map) map.remove();
+        map = null;
+        return;
+      }
+      if (document.hidden) return;
+      if (map && styleFailed) map.setStyle(styleUrl(), { diff: false });
+      initMap();
+      refresh();
+    }
+
+    initMap();
+    refresh();
+    refreshTimer = setInterval(tick, REFRESH_MS);
+  }
+
+  function mountAll() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-tv2nord-radar]"), mount);
+  }
+
+  window.TV2NordRadar = { formatTime: formatTime, mount: mount, mountAll: mountAll };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mountAll);
+  else mountAll();
+})();</script>
+{{ /noparse }}

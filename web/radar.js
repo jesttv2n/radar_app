@@ -3,7 +3,8 @@
    hele strenge, så Tailwind-scanneren finder dem. Mørk tilstand: class="dark" på en forfader. */
 (function () {
   "use strict";
-  if (window.TV2NordRadar) return; // radar.js indlæst to gange
+  // Indlæst igen (fx to radar-komponenter på samme side): montér kun de nye elementer
+  if (window.TV2NordRadar) { window.TV2NordRadar.mountAll(); return; }
 
   var MAPLIBRE = "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl";
   var STYLE = "https://tiles.openfreemap.org/styles/positron";
@@ -342,7 +343,7 @@
     Array.prototype.forEach.call(document.querySelectorAll("[data-tv2nord-radar]"), mount);
   }
 
-  window.TV2NordRadar = { formatTime: formatTime, mount: mount };
+  window.TV2NordRadar = { formatTime: formatTime, mount: mount, mountAll: mountAll };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mountAll);
   else mountAll();
 })();
