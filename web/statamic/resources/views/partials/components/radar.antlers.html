@@ -289,6 +289,10 @@
           bounds: NORDJYLLAND,
           fitBoundsOptions: { padding: 8 },
           minZoom: 5.5,
+          maxPitch: 0,  // et fladt, nordvendt kort: rotation og tilt giver intet på en nedbørsvisning
+          dragRotate: false,
+          pitchWithRotate: false,
+          touchPitch: false,
           maxBounds: [[BBOX[0] - 1, BBOX[1] - 1], [BBOX[2] + 1, BBOX[3] + 1]],
           cooperativeGestures: root.getAttribute("data-cooperative") !== "false",
           attributionControl: { compact: true },
@@ -300,6 +304,8 @@
             "NavigationControl.ZoomOut": "Zoom ud"
           }
         });
+        map.touchZoomRotate.disableRotation();
+        map.keyboard.disableRotation();
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
         map.on("style.load", function () {
           styleReady = true;
