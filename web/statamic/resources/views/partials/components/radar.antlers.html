@@ -21,7 +21,7 @@
   var REFRESH_MS = 2 * 60 * 1000;
   var PLAY_MS = 700;
   var STALE_MIN = 45; // 30 min data age + DMI delay; measured from the newest observation
-  var RAIN_DBZ = 10;
+  var RAIN_DBZ = 12; // = config.LEVELS[0]
   var LEGEND = ["#a6e3ff", "#5ab4f0", "#2a7fd4", "#1f4fa8", "#2fae3c", "#f2e030", "#f5a623", "#e8452c", "#b81f5b", "#7a1fa2"];
 
   var FMT = new Intl.DateTimeFormat("da-DK", {

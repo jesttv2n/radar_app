@@ -13,8 +13,11 @@ ZR_A, ZR_B = 200.0, 1.6
 MIN_DBZ = 7.0  # regn under dette tælles som 0 mm/t
 RAIN_THR = 0.1  # mm/t; prognosetærskel
 
-# dBZ-grænser; under LEVELS[0] er pixlen gennemsigtig
-LEVELS = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 200]
+# dBZ-grænser; under LEVELS[0] er pixlen gennemsigtig. 12 dBZ ≈ 0,2 mm/t: lavere niveauer i
+# max-compositten er mest virga, clutter og støj (valideret mod dmi.dk 2026-11-17)
+LEVELS = [12, 15, 20, 25, 30, 35, 40, 45, 50, 55, 200]
+# Ekkoklynger (8-naboskab, >= LEVELS[0]) under dette antal 500 m-pixels (~2 km²) vises ikke
+DESPECKLE_MIN_PX = 9
 COLORS = ["#a6e3ff", "#5ab4f0", "#2a7fd4", "#1f4fa8", "#2fae3c", "#f2e030",
           "#f5a623", "#e8452c", "#b81f5b", "#7a1fa2"]
 PRECIP_ALPHA = 215

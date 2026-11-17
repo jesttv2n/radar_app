@@ -179,3 +179,20 @@ def test_verify_failure_does_not_fail_cycle(env, monkeypatch):
     monkeypatch.setattr(verify, "score", boom)
     env["times"] = [T(13, 0), T(14, 0)]
     assert run.cycle(T(14, 2)) == "published"
+
+
+def test_published_frames_are_despeckled(env, fixtures_dir, monkeypatch):
+    from radar import grid, render
+    env["times"] = [T(12, 30), T(12, 40), T(12, 50), T(13, 0)]
+    real_despeckle, calls = render.despeckle, []
+
+    def spy(arr):
+        calls.append(arr.shape)
+        return real_despeckle(arr)
+
+    monkeypatch.setattr(render, "despeckle", spy)
+    assert run.cycle(T(13, 2)) == "published"
+    assert len(calls) == 4 + config.LEADS  # hver obs og hver prognose-frame
+    c = grid.crop(grid.read(fixtures_dir / "dk.com.202608281300.500_max.h5"), config.BBOX)
+    obs = [f for f in manifest()["frames"] if f["time"] == T(13, 0).isoformat()][0]
+    assert obs["max_dbz"] == float(np.nanmax(real_despeckle(c.dbz)))

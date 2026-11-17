@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 
+import cv2
 import numpy as np
 from PIL import Image
 from pyproj import Transformer
@@ -31,6 +32,19 @@ class Warper:
                   dst_transform=self.dst_tf, dst_crs="EPSG:3857", src_nodata=np.nan,
                   dst_nodata=np.nan, resampling=Resampling.nearest)
         return out
+
+
+def despeckle(dbz: np.ndarray) -> np.ndarray:
+    """Copy where echo clusters (8-connected, >= LEVELS[0]) under DESPECKLE_MIN_PX px become no echo.
+
+    Run on the native 500 m grid before warping; NaN (outside coverage) is kept."""
+    mask = (np.nan_to_num(dbz, nan=-99) >= config.LEVELS[0]).astype(np.uint8)
+    n, labels, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+    small = stats[:, cv2.CC_STAT_AREA] < config.DESPECKLE_MIN_PX
+    small[0] = False  # label 0 is the background
+    out = dbz.copy()
+    out[small[labels]] = -32.0
+    return out
 
 
 def _palette() -> list[int]:

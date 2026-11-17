@@ -86,8 +86,9 @@ def _forecast(frames, latest, warp, public, out):
     for k in range(config.LEADS):
         t = latest.time + timedelta(minutes=config.STEP_MIN * (k + 1))
         path = public / f"fc_{latest.time:%Y%m%d%H%M}_{config.STEP_MIN * (k + 1):03d}.png"
-        render.save_png(warp(fc[k]), path)
-        forecast.append((t, path, _max_dbz(fc[k])))
+        shown = render.despeckle(fc[k])
+        render.save_png(warp(shown), path)
+        forecast.append((t, path, _max_dbz(shown)))
     np.save(out / "verify" / f"fc_{latest.time:%Y%m%d%H%M}_{VERIFY_LEAD:03d}.npy", fc[-1])
     return forecast
 
@@ -143,9 +144,10 @@ def _cycle(now: datetime) -> str:
     obs = []
     for f in frames:
         path = public / f"obs_{f.time:%Y%m%d%H%M}.png"
+        shown = render.despeckle(f.dbz)  # only what is drawn; nowcast and verification use raw frames
         if not path.exists():  # obs names are immutable; served as immutable by nginx
-            render.save_png(warp(f.dbz), path)
-        obs.append((f.time, path, _max_dbz(f.dbz)))
+            render.save_png(warp(shown), path)
+        obs.append((f.time, path, _max_dbz(shown)))
 
     try:
         forecast = _forecast(frames, latest, warp, public, out)

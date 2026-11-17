@@ -79,3 +79,44 @@ def test_save_png_is_atomic_and_leaves_no_tmp(tmp_path):
     arr = np.zeros((4, 4), "float32")
     render.save_png(arr, tmp_path / "a.png")
     assert [p.name for p in tmp_path.iterdir()] == ["a.png"]
+
+
+def _field(shape=(20, 20)):
+    return np.full(shape, -32.0, "float32")
+
+
+def test_lowest_level_is_12_dbz(tmp_path):
+    arr = _field((1, 3))
+    arr[0, 0], arr[0, 1], arr[0, 2] = 11.5, 12.0, np.nan
+    render.save_png(arr, tmp_path / "x.png")
+    im = Image.open(tmp_path / "x.png")
+    assert im.getpixel((0, 0)) == 0  # under 12 dBZ: gennemsigtig
+    assert im.getpixel((1, 0)) == 1
+
+
+def test_despeckle_removes_clusters_below_min_px():
+    arr = _field()
+    arr[1:3, 1:3] = 30.0            # 4 px: støj
+    arr[10:13, 10:13] = 30.0        # 9 px: beholdes
+    arr[0, 19] = np.nan             # uden for dækning bevares
+    out = render.despeckle(arr)
+    assert (out[1:3, 1:3] == -32.0).all()
+    assert (out[10:13, 10:13] == 30.0).all()
+    assert np.isnan(out[0, 19])
+    assert (arr[1:3, 1:3] == 30.0).all()  # input uændret
+
+
+def test_despeckle_counts_diagonal_neighbours():
+    arr = _field()
+    for i in range(config.DESPECKLE_MIN_PX):  # diagonal linje = én klynge (8-naboskab)
+        arr[i, i] = 25.0
+    assert (np.diag(render.despeckle(arr))[:config.DESPECKLE_MIN_PX] == 25.0).all()
+
+
+def test_despeckle_ignores_echoes_below_lowest_level():
+    arr = _field()
+    arr[5:15, 5:15] = 11.0          # svagt, under tærsklen: rør ikke
+    arr[5, 5] = 30.0                # alene over tærsklen -> fjernes
+    out = render.despeckle(arr)
+    assert out[5, 5] == -32.0
+    assert (out[6:15, 6:15] == 11.0).all()
